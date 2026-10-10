@@ -1,3 +1,9 @@
+# Bamboo Stalk
+- Restore Fatigue
+- ???
+- ???
+- ???
+
 # Beast Meat
 - Drain Fatigue
 - Fortify Running
@@ -22,11 +28,29 @@
 - ???
 - ???
 
+# Bulbous Stalk
+- Damage Health
+- ???
+- ???
+- ???
+
 # Bread
 - Restore Health
 - Boost Stamina Regen
 - Resist Frost
 - Resist Poison
+
+# Cheese Wedge
+- Drain Fatigue
+- ???
+- ???
+- ???
+
+# Corkberries
+- Slowfall
+- Restore Health
+- ???
+- ???
 
 # Crab Meat
 - Fortify Swimming
@@ -34,17 +58,65 @@
 - Fortify Unarmed
 - Restore Health
 
+# Demon Brain
+- ???
+- ???
+- ???
+- ???
+
+# Eyeless Belly
+- ???
+- ???
+- ???
+- ???
+
+# Fern Fibers
+- Feather
+- Restore Fatigue
+- ???
+- ???
+
+# Fiddlefern
+- Restore Fatigue
+- ???
+- ???
+- ???
+
 # Fire Salts
 - Fire Damage
 - Resist Frost
 - Restore Magic
 - Weakness to Frost
 
+# Frog Belly
+- Drain Running
+- ???
+- ???
+- ???
+
+# Frog Legs
+- ???
+- ???
+- ???
+- ???
+
 # Gastropod Meat
 - Water Walking
 - Slow
 - Water Breathing
 - Drain Running
+
+# Ghal-Tor-Asha Leaf
+- Silence
+- ???
+- ???
+- Levitate
+
+# Harn Root
+- ???
+- ???
+- ???
+- ???
 
 # Headge-Crow Egg
 - Fortify Max Health
@@ -76,6 +148,12 @@
 - Fortify Sneak
 - Poison Damage
 
+# Kelp
+- ???
+- ???
+- ???
+- ???
+
 # Luminescent Funguscap
 - Invisibility
 - Fortify Sneak
@@ -87,6 +165,18 @@
 -Damage Health (Over Time)
 -Paralyze
 -Weakness to Poison
+
+# Minal Tuber
+- Burden
+- ???
+- ???
+- ???
+
+# Olive Oil
+- ???
+- ???
+- ???
+- ???
 
 # Ooze Residue
 - Poison Damage
@@ -104,6 +194,12 @@
 - Frost Damage
 - Resist Fire
 - Drain Stamina Regen
+- ???
+
+# Rampberry
+- Restore Fatigue
+- ???
+- ???
 - ???
 
 # Red Nose Cap
@@ -141,6 +237,12 @@
 - Water Breathing
 - Fortify Max Magic
 - Water Walking
+
+# Urchin Spine
+- ???
+- ???
+- ???
+- ???
 
 # Volt Salts
 - Shock Damage
