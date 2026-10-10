@@ -25,9 +25,12 @@ Player gold, stats and XP are under `PlayerData` near the end of the file. Offse
 `scripts/gvas_edit.py` builds on it to show and edit values by path or alias (`gold`, `xp`, `attr:<Name>`, `skill:<Name>.<Field>`, `skillpoints`, `perkpoints`):
 
 ```
+python3 scripts/gvas_edit.py list [<save dir or .sav files>]
 python3 scripts/gvas_edit.py show <save> gold skill:Alchemy
 python3 scripts/gvas_edit.py set <save> gold=5000 skill:Alchemy.Level=25
 ```
+
+Save titles aren't stored in the saves themselves. `list` reads them from `HFSaveLabels.sav`, and the character, level, location and time from `NarrativeSaveMetadata.sav`, both keyed by slot name. `list` defaults to the Proton save directory.
 
 It only patches fixed-size values (int, float, bool) in place. Strings, names and anything that changes length would require rewriting every enclosing size field, which isn't implemented.
 

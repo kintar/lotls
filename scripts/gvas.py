@@ -65,6 +65,18 @@ NATIVE_STRUCTS = {
 }
 
 
+def read_text(r):
+    """FText: returns the display string for the history types seen in saves."""
+    r.u32()  # flags
+    history = struct.unpack('<b', r.raw(1))[0]
+    if history == -1:  # none: optional culture-invariant string
+        return r.fstr() if r.i32() else ''
+    if history == 0:  # base: namespace, key, source string
+        r.fstr(); r.fstr()
+        return r.fstr()
+    raise ValueError(f'unsupported FText history type {history}')
+
+
 def read_value(r, t, size, flags, in_container=False):
     name, inner = t
     start = r.p
@@ -90,6 +102,8 @@ def read_value(r, t, size, flags, in_container=False):
         return r.fstr()
     if name == 'EnumProperty':
         return r.fstr()
+    if name == 'TextProperty':
+        return read_text(r)
     if name == 'ByteProperty':
         if inner and inner[0][0] != 'None' and not in_container:
             return r.fstr() if size != 1 else r.u8()
@@ -156,6 +170,9 @@ def read_props(r):
             p.value = read_value(r, t, size, flags)
         except Exception as e:  # fall back to raw on anything we can't decode
             p.value = ('error', str(e))
+        if t[0] == 'TextProperty' and isinstance(p.value, tuple):
+            r.p = vstart  # unsupported history type: keep the raw bytes
+            p.value = ('raw', r.raw(size).hex())
         if t[0] != 'BoolProperty' and r.p != vstart + size:
             if not (isinstance(p.value, tuple) and p.value and p.value[0] == 'error'):
                 p.value = ('sizemismatch', r.p - vstart, size, p.value)

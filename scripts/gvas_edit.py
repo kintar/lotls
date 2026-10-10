@@ -22,6 +22,7 @@ Examples:
     python3 scripts/gvas_edit.py set QuickSave1.sav gold=5000 attr:MaxHealth=200 skill:Alchemy.Level=25
 """
 import argparse
+import datetime
 import fnmatch
 import os
 import shutil
@@ -241,9 +242,66 @@ def apply_edits(data, props, edits):
     return bytes(data), changes
 
 
+DEFAULT_SAVE_DIR = os.path.expanduser(
+    '~/.steam/steam/steamapps/compatdata/3849000/pfx/drive_c/users/steamuser'
+    '/AppData/Local/The_Holy_Fool/Saved/SaveGames')
+
+
+def _index(path):
+    """Load a slot-keyed index file (HFSaveLabels / NarrativeSaveMetadata) as {slot: {field: value}}."""
+    if not os.path.exists(path):
+        return {}
+    _, props = gvas.load(path)
+    if not props or not isinstance(props[0].value, list):
+        return {}
+    # Blueprint struct fields carry a suffix, e.g. Level_5_C481D4D2...; key on the bare name.
+    return {slot: {p.name.split('_')[0]: p.value for p in fields} for slot, fields in props[0].value}
+
+
+def _ticks_to_str(ticks):
+    if not isinstance(ticks, int):
+        return ''
+    t = datetime.datetime(1, 1, 1) + datetime.timedelta(microseconds=ticks // 10)
+    return t.strftime('%Y-%m-%d %H:%M:%S')
+
+
+def list_saves(targets):
+    """Print slot, title, character, level, location and save time for each save."""
+    files = []
+    for t in targets:
+        if os.path.isdir(t):
+            files += sorted(os.path.join(t, f) for f in os.listdir(t) if f.endswith('.sav')
+                            and f not in ('HFSaveLabels.sav', 'NarrativeSaveMetadata.sav'))
+        else:
+            files.append(t)
+    rows, indexes = [], {}
+    for f in files:
+        d = os.path.dirname(os.path.abspath(f))
+        if d not in indexes:
+            indexes[d] = (_index(os.path.join(d, 'HFSaveLabels.sav')),
+                          _index(os.path.join(d, 'NarrativeSaveMetadata.sav')))
+        labels, meta = indexes[d]
+        slot = os.path.basename(f)[:-len('.sav')] if f.endswith('.sav') else os.path.basename(f)
+        lab, md = labels.get(slot, {}), meta.get(slot, {})
+        rows.append((slot, lab.get('Title', ''), md.get('Username') or lab.get('CharacterName', ''),
+                     str(md.get('Level', '')), md.get('NearestPOIDisplayName', ''),
+                     _ticks_to_str(md.get('SaveTime'))))
+    if not rows:
+        print('no saves found', file=sys.stderr)
+        return
+    header = ('Slot', 'Title', 'Character', 'Level', 'Location', 'Saved')
+    rows.sort(key=lambda row: row[5], reverse=True)
+    widths = [max(len(str(x)) for x in col) for col in zip(header, *rows)]
+    for row in [header] + rows:
+        print('  '.join(str(x).ljust(w) for x, w in zip(row, widths)).rstrip())
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest='cmd', required=True)
+    ls = sub.add_parser('list', help='list saves with their titles and metadata')
+    ls.add_argument('targets', nargs='*', metavar='DIR_OR_SAVE',
+                    help=f'save directory or .sav files (default: {DEFAULT_SAVE_DIR})')
     s = sub.add_parser('show', help='print values or subtrees')
     s.add_argument('save')
     s.add_argument('paths', nargs='+')
@@ -253,6 +311,10 @@ def main():
     e.add_argument('-o', '--output', help='write to this file instead of editing in place')
     e.add_argument('--no-backup', action='store_true', help='skip the backup when editing in place')
     args = ap.parse_args()
+
+    if args.cmd == 'list':
+        list_saves(args.targets or [DEFAULT_SAVE_DIR])
+        return
 
     data = open(args.save, 'rb').read()
     _, r = gvas.read_header(data)
