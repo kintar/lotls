@@ -14,6 +14,23 @@ python3 scripts/generate_combinations.py
 
 The script only uses the Python standard library. The combination sizes it covers are set in `SIZES`.
 
+`scripts/gvas.py` is a read-only parser for the game's save files (uncompressed UE 5.8 GVAS, Narrative Pro save system). It prints the property tree with absolute file offsets:
+
+```
+python3 scripts/gvas.py <path/to/Save.sav>
+```
+
+Player gold, stats and XP are under `PlayerData` near the end of the file. Offsets shift between saves, so locate fields by path, not fixed offsets.
+
+`scripts/gvas_edit.py` builds on it to show and edit values by path or alias (`gold`, `xp`, `attr:<Name>`, `skill:<Name>.<Field>`, `skillpoints`, `perkpoints`):
+
+```
+python3 scripts/gvas_edit.py show <save> gold skill:Alchemy
+python3 scripts/gvas_edit.py set <save> gold=5000 skill:Alchemy.Level=25
+```
+
+It only patches fixed-size values (int, float, bool) in place. Strings, names and anything that changes length would require rewriting every enclosing size field, which isn't implemented.
+
 ## Data conventions
 
 `alchemy_ingredients.md` holds ingredient data:
